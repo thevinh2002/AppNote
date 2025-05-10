@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;  /* Đảm bảo html và body chiếm 100% chiều cao của trang */
+}
+
+#root {
+  height: 100%;  /* Đảm bảo #root chiếm 100% chiều cao của trang */
+}
+
+body {
+  display: flex;
+  flex-direction: column;  /* Đảm bảo body có thể flexbox để các phần tử con tự động giãn ra */
+}
