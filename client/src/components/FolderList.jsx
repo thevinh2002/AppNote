@@ -92,13 +92,15 @@ export default function FolderList({ folders = [], onFolderDeleted }) {
                 </CardContent>
               </Link>
               
-              <Box sx={{ pr: 1 }}>
-                <DeleteFolder
-                  folderId={id}
-                  folderName={name}
-                  onDeleteSuccess={handleDeleteSuccess}
-                />
-              </Box>
+              {id === activeFolderID && (
+                <Box sx={{ pr: 1 }}>
+                  <DeleteFolder
+                    folderId={id}
+                    folderName={name}
+                    onDeleteSuccess={handleDeleteSuccess}
+                  />
+                </Box>
+              )}
             </Stack>
           </Card>
         ))}

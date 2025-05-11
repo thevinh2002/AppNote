@@ -27,19 +27,16 @@ export default function NoteList() {
   const { folder } = useLoaderData();
   const submit = useSubmit();
   const navigate = useNavigate();
-  //   const folder = {
-  //     notes: [{ id: "1", content: "<p>this is a test note</p>" }],
-  //   };
+
   useEffect(() => {
     if (noteId) {
       setActiveNoteId(noteId);
       return;
     }
     if (folder?.notes?.[0]) {
-      navigate(`note/${folder?.notes?.[0]?.id}`);
-      return;
+      navigate(`note/${folder.notes[0].id}`);
     }
-  }, [noteId, folder.notes]);
+  }, [noteId, folder?.notes]);
 
   const handleAddNewNote = () => {
     submit(
@@ -51,9 +48,18 @@ export default function NoteList() {
     );
   };
 
+  if (!folder) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Typography>Loading folder...</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Grid container sx={{ height: "100%" }}>
       <Grid
+        
         size={4}
         sx={{
           height: "100%",
@@ -94,9 +100,8 @@ export default function NoteList() {
             p: 1,
           }}
         >
-          {folder.notes.map((note) => {
-            return (
-              <Card
+          {(folder.notes || []).map((note) => (
+            <Card
               key={note.id}
               sx={{
                 mb: 1,
@@ -125,12 +130,11 @@ export default function NoteList() {
                     width: "100%",
                   }}
                 >
-                  {/* Note Title and Link */}
                   <Link
                     to={`/folder/${folderId}/note/${note.id}`}
                     onClick={() => setActiveNoteId(note.id)}
                     style={{
-                      textAlign:"left",
+                      textAlign: "left",
                       flex: 1,
                       textDecoration: "none",
                       color: "inherit",
@@ -151,22 +155,18 @@ export default function NoteList() {
                       }}
                     />
 
-                    {/* Note Updated Date */}
                     <Typography
                       variant="caption"
                       sx={{
                         color: "#6c757d",
-                        fontSize: "12px", // Làm nhỏ cỡ chữ
-                        alignSelf: "flex-start", // Căn lề trái
-                        marginTop: "8px", // Thêm khoảng cách với phần content
-                        marginLeft: "0", // Đảm bảo không có khoảng cách bên trái
+                        fontSize: "12px",
+                        marginTop: "8px",
                       }}
                     >
                       {moment(note.updatedAt).format("DD/MM/YYYY")}
                     </Typography>
                   </Link>
 
-                  {/* Delete Note Button */}
                   <DeleteNote
                     noteId={note.id}
                     folderId={folderId}
@@ -175,8 +175,7 @@ export default function NoteList() {
                 </Box>
               </CardContent>
             </Card>
-            );
-          })}
+          ))}
         </List>
       </Grid>
       <Grid size={8}>
