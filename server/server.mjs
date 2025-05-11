@@ -4,7 +4,6 @@ import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
-// import fakeData from "./fakeData/index.js";
 import mongoose from "mongoose";
 import 'dotenv/config'
 import { typeDefs } from "./Schema/index.js";
@@ -38,38 +37,6 @@ const server = new ApolloServer({
 });
 //chan
 
-// const AuthorizationJWT = async (req, res, next) => {
-//     console.log({ authorization: req.headers.authorization });
-//     const authorizationHeader = req.headers.authorization;
-//     if (authorizationHeader) {
-//         const accessToken = authorizationHeader.split(' ')[1];
-
-//         getAuth().verifyIdToken(accessToken)
-//             .then((decodedToken) => {
-//                 res.locals.uid = decodedToken.uid;
-//                 next();
-//             })
-//             .catch((error) => {
-//                 console.error("Error verifying ID token:", error);
-//                 return res.status(403).json({ message: 'Forbidden', error: error });
-//             });
-//     }
-//     else {
-//         return res.status(401).json({ message: "Unauthorized" });
-//     }
-// }
-
-// app.use(AuthorizationJWT)
-// // Khởi động server
-// await server.start();
-
-// // 4. Áp dụng Apollo middleware sau cùng
-// app.use('/graphql', expressMiddleware(server, {
-//     context: async ({ req, res }) => {
-//         return { uid: res.locals.uid };
-//     }
-// }));
-
 const AuthorizationJWT = async (req, res, next) => {
     const authorizationHeader = req.headers.authorization;
     console.log({ authorization: authorizationHeader });
@@ -86,7 +53,8 @@ const AuthorizationJWT = async (req, res, next) => {
             return res.status(403).json({ message: 'Forbidden', error });
         }
     } else {
-        return res.status(401).json({ message: "Unauthorized - Missing Bearer token" });
+        next()
+        // return res.status(401).json({ message: "Unauthorized - Missing Bearer token" });
     }
 };
 

@@ -62,6 +62,43 @@ export const resolvers = {
         },
     },
     Mutation: {
+        
+        deleteNote: async (parent, { id }, context) => {
+            // Kiểm tra xem note có tồn tại và thuộc về user hiện tại không
+            const note = await NoteModel.findById(id);
+            if (!note) {
+                throw new Error('Note not found');
+            }
+
+            // Lấy folder chứa note để kiểm tra author
+            const folder = await FolderModel.findById(note.folderId);
+            if (!folder || folder.authorId !== context.uid) {
+                throw new Error('Unauthorized - You can only delete your own notes');
+            }
+
+            const deletedNote = await NoteModel.findByIdAndDelete(id);
+            return deletedNote;
+        },
+
+        deleteFolder: async (parent, { id }, context) => {
+            // Kiểm tra folder có tồn tại và thuộc về user hiện tại không
+            const folder = await FolderModel.findById(id);
+            if (!folder) {
+                throw new Error('Folder not found');
+            }
+            if (folder.authorId !== context.uid) {
+                throw new Error('Unauthorized - You can only delete your own folders');
+            }
+
+            // Xóa tất cả notes trong folder trước (cascade delete)
+            await NoteModel.deleteMany({ folderId: id });
+
+            // Xóa folder
+            const deletedFolder = await FolderModel.findByIdAndDelete(id);
+            return deletedFolder
+        },
+
+
         updateNote: async(parent, args)=>{
             const noteId = args.id;
             const updatedNote = await NoteModel.findByIdAndUpdate(noteId, args, { new: true })

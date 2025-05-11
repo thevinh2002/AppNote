@@ -14,7 +14,12 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-
+// ✅ Polyfill setImmediate nếu không có (tránh lỗi khi dùng draft-js)
+if (typeof setImmediate === "undefined") {
+  window.setImmediate = function (fn, ...args) {
+    return setTimeout(fn, 0, ...args);
+  };
+}
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(

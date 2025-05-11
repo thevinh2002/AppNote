@@ -10,7 +10,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { stateToHTML } from "draft-js-export-html";
 import { useLoaderData, useSubmit, useLocation } from "react-router-dom";
 import { debounce } from "@mui/material/utils";
-
+import 'setimmediate';
 export default function Note() {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()

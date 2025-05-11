@@ -19,6 +19,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import moment from "moment";
+import DeleteNote from "./DeleteNote";
 
 export default function NoteList() {
   const { folderId, noteId } = useParams();
@@ -49,6 +50,7 @@ export default function NoteList() {
       { method: "post", action: `/folder/${folderId}` }
     );
   };
+
   return (
     <Grid container sx={{ height: "100%" }}>
       <Grid
@@ -94,64 +96,85 @@ export default function NoteList() {
         >
           {folder.notes.map((note) => {
             return (
-              <Link
-                key={note.id}
-                to={`/folder/${folderId}/note/${note.id}`}
-                style={{ textDecoration: "none" }}
-                onClick={() => setActiveNoteId(note.id)}
+              <Card
+              key={note.id}
+              sx={{
+                mb: 1,
+                "&:hover": {
+                  boxShadow: 2,
+                  transform: "translateY(-2px)",
+                  transition: "all 0.2s ease",
+                },
+                background:
+                  note.id === activeNoteId ? "rgb(255 211 140)" : "white",
+              }}
+            >
+              <CardContent
+                sx={{
+                  "&:last-child": { p: 2 },
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
               >
-                <Card
+                <Box
                   sx={{
-                    mb: 1,
-                    "&:hover": {
-                      boxShadow: 2,
-                      transform: "translateY(-2px)",
-                      transition: "all 0.2s ease",
-                    },
-                    background:
-                      note.id === activeNoteId ? "rgb(255 211 140)" : "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
                   }}
                 >
-                  <CardContent
-                    sx={{
-                      "&:last-child": { p: "10px" },
-                      p: "10px",
-                      display: "flex", // Sử dụng flexbox cho CardContent
-                      flexDirection: "column", // Đảm bảo các phần tử được xếp theo chiều dọc
-                      alignItems: "flex-start", // Căn chỉnh tất cả các phần tử con về bên trái
+                  {/* Note Title and Link */}
+                  <Link
+                    to={`/folder/${folderId}/note/${note.id}`}
+                    onClick={() => setActiveNoteId(note.id)}
+                    style={{
+                      textAlign:"left",
+                      flex: 1,
+                      textDecoration: "none",
+                      color: "inherit",
                     }}
                   >
-                    <div
-                      style={{
-                        fontSize: "16px",
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
                         fontWeight: "bold",
+                        fontSize: "16px",
                         textAlign: "left",
-                      }} // Đảm bảo tiêu đề căn trái
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                       dangerouslySetInnerHTML={{
                         __html: note.content.substring(0, 30) || "Empty",
                       }}
                     />
 
-                    <Box
+                    {/* Note Updated Date */}
+                    <Typography
+                      variant="caption"
                       sx={{
-                        display: "flex",
-                        justifyContent: "flex-start", // Căn chỉnh ngày tháng về bên trái
-                        padding: "10px",
+                        color: "#6c757d",
+                        fontSize: "12px", // Làm nhỏ cỡ chữ
+                        alignSelf: "flex-start", // Căn lề trái
+                        marginTop: "8px", // Thêm khoảng cách với phần content
+                        marginLeft: "0", // Đảm bảo không có khoảng cách bên trái
                       }}
                     >
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          fontWeight: "500",
-                          color: "#6c757d", // Màu xám nhẹ
-                        }}
-                      >
-                        {moment(note.updatedAt).format("DD/MM/YYYY")}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Link>
+                      {moment(note.updatedAt).format("DD/MM/YYYY")}
+                    </Typography>
+                  </Link>
+
+                  {/* Delete Note Button */}
+                  <DeleteNote
+                    noteId={note.id}
+                    folderId={folderId}
+                    isActive={note.id === activeNoteId}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
             );
           })}
         </List>

@@ -1,12 +1,19 @@
-import { Card, CardContent, List, Typography, Box } from "@mui/material";
+import { Card, CardContent, List, Typography, Box, IconButton, Stack } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import NewFolder from "./NewFolder";
-export default function FolderList({ folders = [] }) {
+import DeleteFolder from "./DeleteFolder";
+
+export default function FolderList({ folders = [], onFolderDeleted }) {
   const { folderId } = useParams();
   const [activeFolderID, setActiveFolderID] = useState(folderId);
+
+  const handleDeleteSuccess = (deletedFolder) => {
+    console.log("Đã xóa folder:", deletedFolder);
+    onFolderDeleted?.(deletedFolder); // Gọi callback từ component cha
+  };
 
   return (
     <Box
@@ -24,7 +31,7 @@ export default function FolderList({ folders = [] }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 2, // thêm margin dưới cho thoáng
+          mb: 2,
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
@@ -37,7 +44,7 @@ export default function FolderList({ folders = [] }) {
         disablePadding
         sx={{
           flexGrow: 1,
-          overflow: "auto", // Cho phép scroll nếu nội dung dài
+          overflow: "auto",
           "&::-webkit-scrollbar": {
             width: "6px",
           },
@@ -48,40 +55,52 @@ export default function FolderList({ folders = [] }) {
         }}
       >
         {folders.map(({ id, name }) => (
-          <Link
-            to={`/folder/${id}`}
+          <Card
             key={id}
-            style={{ textDecoration: "none" }}
-            onClick={() => setActiveFolderID(id)}
+            sx={{
+              mb: 2,
+              borderRadius: 1,
+              bgcolor: "#fff",
+              boxShadow: "none",
+              "&:hover": {
+                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                transform: "translateY(-2px)",
+                transition: "all 0.2s ease-in-out",
+              },
+              background: id === activeFolderID ? "rgb(255 211 140)" : "white",
+            }}
           >
-            <Card
-              sx={{
-                mb: 2,
-                borderRadius: 1,
-                bgcolor: "#fff",
-                boxShadow: "none",
-                "&:hover": {
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                  transform: "translateY(-2px)",
-                  transition: "all 0.2s ease-in-out",
-                },
-                background:
-                  id === activeFolderID ? "rgb(255 211 140)" : "white",
-              }}
-            >
-              <CardContent sx={{ px: 2, py: 1.5 }}>
-                <Typography
-                  variant="body1"
-                  color="text.primary"
-                  fontSize={16}
-                  fontWeight={"bold"}
-                  textAlign={"left"}
-                >
-                  {name}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Link>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Link
+                to={`/folder/${id}`}
+                style={{ 
+                  textDecoration: "none",
+                  flexGrow: 1,
+                }}
+                onClick={() => setActiveFolderID(id)}
+              >
+                <CardContent sx={{ px: 2, py: 1.5 }}>
+                  <Typography
+                    variant="body1"
+                    color="text.primary"
+                    fontSize={16}
+                    fontWeight={"bold"}
+                    textAlign={"left"}
+                  >
+                    {name}
+                  </Typography>
+                </CardContent>
+              </Link>
+              
+              <Box sx={{ pr: 1 }}>
+                <DeleteFolder
+                  folderId={id}
+                  folderName={name}
+                  onDeleteSuccess={handleDeleteSuccess}
+                />
+              </Box>
+            </Stack>
+          </Card>
         ))}
       </List>
     </Box>

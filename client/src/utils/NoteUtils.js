@@ -34,11 +34,17 @@ export const noteloader = async ({ params: { noteId } }) => {
 
   const data = await graphQLRequest({
     query,
-    variables: { noteId }, // Đảm bảo truyền đúng noteId vào
+    variables: { noteId },
   });
 
-  return { note: data?.note || null }; // Trả về note nếu có, hoặc null nếu không tìm thấy
+  // Kiểm tra nếu note không tồn tại
+  if (!data?.note) {
+    return { note: null }; // Nếu không tìm thấy note, trả về null
+  }
+
+  return { note: data.note }; // Nếu có note, trả về nó
 };
+
 
 export const addNewNote = async ({ params, request }) => {
   const newNote = await request.formData();
@@ -79,3 +85,36 @@ const {updateNote} = await graphQLRequest({
 })
 return { updateNote };
 }
+
+
+
+export const deleteNote = async (noteId) => {
+  const query = `mutation DeleteNote($id: String!) {
+    deleteNote(id: $id) {
+      id
+    }
+  }`;
+
+  try {
+    const result = await graphQLRequest({
+      query,
+      variables: { id: noteId },
+    });
+
+    if (result?.deleteNote) {
+      return {
+        success: true,
+        deletedNote: result.deleteNote,
+      };
+    } else {
+      throw new Error("Failed to delete note.");
+    }
+  } catch (error) {
+    console.error("❌ Lỗi khi xóa note:", error);
+    return {
+      success: false,
+      error: error.message || "Lỗi không xác định",
+    };
+  }
+};
+
