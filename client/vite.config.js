@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   define: {
-    "global": {}, // Giữ lại cấu hình của bạn
+    "global": 'window', // Giữ lại cấu hình của bạn
   },
   // server: {
   //   hmr: false, // Tắt Fast Refresh (HMR)
