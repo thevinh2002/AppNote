@@ -28,7 +28,6 @@ app.use(express.json());
 
 
 const URL = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.sendz5k.mongodb.net/`;
-
 const PORT = process.env.PORT || 4000;
 const server = new ApolloServer({
     typeDefs,
